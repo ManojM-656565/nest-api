@@ -1,0 +1,34 @@
+import { Injectable, OnModuleInit, OnModuleDestroy } from '@nestjs/common';
+import { PrismaPg } from '@prisma/adapter-pg';
+import { ConfigService } from '@nestjs/config';
+import { PrismaClient } from '@prisma/client';
+
+var connectionString = new ConfigService().get<string>('DATABASE_URL');
+
+@Injectable()
+export class PrismaService extends PrismaClient implements OnModuleInit, OnModuleDestroy {
+  constructor(private configService: ConfigService) {
+    // If you want to use the PrismaPg adapter, construct it here and pass it to the client.
+    // Casting to `any` suppresses TypeScript complaints about unknown properties.
+    connectionString = process.env.DATABASE_URL as string;
+    console.log('PrismaService connectionString:', connectionString);
+    const adapter = new PrismaPg({ connectionString });
+
+    // Pass adapter to PrismaClient. Cast to any to avoid TS errors when generated types
+    // don't include the adapter option.
+    // If you prefer, replace the next line with `super()` and rely on process.env.DATABASE_URL.
+    super({ adapter } as any);
+  }
+
+  async onModuleInit() {
+    //add an error if connection string is undefined
+    if (!connectionString) {
+      throw new Error('DATABASE_URL is not defined');
+    }
+    await this.$connect();
+  }
+
+  async onModuleDestroy() {
+    await this.$disconnect();
+  }
+}

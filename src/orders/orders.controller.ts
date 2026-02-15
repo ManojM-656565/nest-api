@@ -9,6 +9,6 @@ export class OrderController {
 
   @Post('orders')
   createOrder(@Body() dto: OrderDto,   @Req() req: Request) {
-    return this.orderService.createOrder(dto,req['correlatioId']);
+    return this.orderService.createOrder(dto,req['correlationId']);
   }
 }

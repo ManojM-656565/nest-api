@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, Logger } from '@nestjs/common';
 import { OrderDto } from './dto/orders.dto';
-import { PrismaService } from 'src/prisma.service';
+import { PrismaService } from '../prisma.service';
 
 
 
@@ -102,6 +102,7 @@ export class OrderService {
         correlationId,
         error:error.message,
       });
+      throw error; 
     }
   }
 }
